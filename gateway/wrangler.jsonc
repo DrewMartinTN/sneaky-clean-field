@@ -9,6 +9,7 @@
     {"binding":"SALES","service":"sneaky-clean-sales-assistant"}
   ],
   "vars":{
+    "GOOGLE_CLIENT_ID":"1045517079262-jnb6gt4273vh8q1mohdme5ii5s63h9al.apps.googleusercontent.com",
     "ALLOWED_ORIGINS":"https://field.sneakycleantn.com,https://drewmartintn.github.io"
   }
 }
