@@ -1,0 +1,14 @@
+{
+  "name":"sneaky-clean-field-web-api",
+  "account_id":"1960109e164e5019c6fa3cca54afcbe9",
+  "main":"worker.mjs",
+  "compatibility_date":"2026-10-20",
+  "workers_dev":true,
+  "services":[
+    {"binding":"FIELD","service":"sneaky-clean-field-sync"},
+    {"binding":"SALES","service":"sneaky-clean-sales-assistant"}
+  ],
+  "vars":{
+    "ALLOWED_ORIGINS":"https://field.sneakycleantn.com,https://drewmartintn.github.io"
+  }
+}

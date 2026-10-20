@@ -1,0 +1,11 @@
+import {apiFetch} from "@/lib/api";
+"use client";
+import {useState} from "react";
+import {Button} from "@/components/ui/button";
+import {Door,Rep} from "./types";
+export default function DoorAssignment({door,doors,reps,onSaved}:{door:Door;doors:Door[];reps:Rep[];onSaved:()=>void}){
+ const [repId,setRepId]=useState(door.assignedRepId??""),[nearby,setNearby]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState("");
+ const leadIds=(nearby?doors.filter(d=>Math.hypot((d.latitude-door.latitude)*69,(d.longitude-door.longitude)*69*Math.cos(door.latitude*Math.PI/180))<=1):[door]).map(d=>d.id);
+ async function assign(inheritTerritory=false){setBusy(true);try{const r=await apiFetch('/api/field/assignments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({repId,leadIds,inheritTerritory})});const result=await r.json() as {error?:string};if(!r.ok)throw Error(result.error);setMessage(inheritTerritory?"Individual assignments removed. Doors now follow their territory owner, or remain unassigned outside a territory.":`${leadIds.length} saved door(s) assigned. Reps receive the assignment on their next sync.`);onSaved();}catch(e){setMessage(e instanceof Error?e.message:'Could not assign doors.');}finally{setBusy(false);}}
+ return <div className="assignment"><h3>Assign a salesman</h3><label>Salesman<select value={repId} onChange={e=>setRepId(e.target.value)}><option value="">Choose salesman</option>{reps.filter(r=>!r.disabled).map(r=><option key={r.id} value={r.id}>{r.name}</option>)}</select></label><label className="completion-check"><input type="checkbox" checked={nearby} onChange={e=>setNearby(e.target.checked)}/> Include saved doors within about one mile ({leadIds.length} selected)</label><Button onClick={()=>void assign()} disabled={!repId||busy||leadIds.length>200}>{busy?'Assigning…':'Assign saved doors'}</Button><Button variant="outline" onClick={()=>void assign(true)} disabled={busy||leadIds.length>200}>Use territory owner</Button><p className="muted">An individual assignment overrides the neighborhood owner. New doors inside a territory inherit its owner automatically.</p>{message&&<p role="status">{message}</p>}</div>;
+}
