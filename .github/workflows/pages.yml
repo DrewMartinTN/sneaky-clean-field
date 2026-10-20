@@ -26,6 +26,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 75
     permissions:
       pages: write
       id-token: write
@@ -36,3 +37,27 @@ jobs:
       - name: Publish GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Enable HTTPS when the custom-domain certificate is ready
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const target = {owner: context.repo.owner, repo: context.repo.repo};
+            const deadline = Date.now() + 65 * 60 * 1000;
+            let previousState;
+            while (Date.now() < deadline) {
+              const {data: pages} = await github.request('GET /repos/{owner}/{repo}/pages', target);
+              if (pages.https_enforced) {
+                core.info('HTTPS is enforced.');
+                return;
+              }
+              if (pages.https_certificate?.state === 'approved') {
+                await github.request('PUT /repos/{owner}/{repo}/pages', {...target, https_enforced: true});
+                core.info('Custom-domain certificate approved; HTTPS enforcement enabled.');
+                return;
+              }
+              const state = pages.https_certificate?.state ?? 'awaiting certificate';
+              if (state !== previousState) core.info(`GitHub certificate: ${state}`);
+              previousState = state;
+              await new Promise(resolve => setTimeout(resolve, 30000));
+            }
+            core.setFailed('GitHub has not issued the custom-domain certificate after 65 minutes. Inspect Pages DNS and certificate status.');

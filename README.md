@@ -26,7 +26,7 @@ Supply secrets through Wrangler's standard input or the Cloudflare secret API. N
 
 ## Publishing and recovery
 
-Push to `main` to run authentication tests, type checking, the production build and GitHub Pages publication. Only `dist/` is uploaded to Pages. Configure the repository's Pages custom domain as `field.sneakycleantn.com`; the domain's DNS CNAME targets `drewmartintn.github.io`. Enable HTTPS once GitHub provisions its certificate. The separate public website uses a different repository and remains unchanged.
+Push to `main` to run authentication tests, type checking, the production build and GitHub Pages publication. Only `dist/` is uploaded to Pages. Configure the repository's Pages custom domain as `field.sneakycleantn.com`; the domain's DNS CNAME targets `drewmartintn.github.io`. After publishing, the workflow waits for GitHub's certificate and enables HTTPS automatically. It fails visibly if certificate issuance takes more than 65 minutes. The separate public website uses a different repository and remains unchanged.
 
 The original Sites project and source are retained during cutover for recovery. To roll back a frontend release, revert the relevant GitHub commit and let the Pages workflow publish. The server-side manager allowlist can revoke dashboard access independently of the static deployment.
 
