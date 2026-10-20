@@ -29,3 +29,7 @@ Supply secrets through Wrangler's standard input or the Cloudflare secret API. N
 Push to `main` to run authentication tests, type checking, the production build and GitHub Pages publication. Only `dist/` is uploaded to Pages. Configure the repository's Pages custom domain as `field.sneakycleantn.com`; the domain's DNS CNAME targets `drewmartintn.github.io`. Enable HTTPS once GitHub provisions its certificate. The separate public website uses a different repository and remains unchanged.
 
 The original Sites project and source are retained during cutover for recovery. To roll back a frontend release, revert the relevant GitHub commit and let the Pages workflow publish. The server-side manager allowlist can revoke dashboard access independently of the static deployment.
+
+## October 20, 2026 migration
+
+Google sign-in was verified on the GitHub Pages publication with live Field and Sales Assistant data. The existing production manager allowlist and manager credential were transferred to the gateway as Worker secrets. All 12 authentication/gateway tests passed, and GitHub Actions passed the production build and publication checks. The GoDaddy `field` CNAME was changed from `custom-domains.chatgpt.site` to `drewmartintn.github.io`, after assigning the custom domain to this repository. Legacy `/callback` links discard their expired query parameters and return to Field. The native app, booking website, Square integration and Sales Assistant worker were not redeployed.
